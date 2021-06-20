@@ -14,8 +14,8 @@ class KMRDDataLoader:
         train_df, valid_temp_df = self._read_dataset(data_path, valid_raito)
 
         # Min, Max Rating
-        self.min_rating = min(train_df.rate)
-        self.max_rating = train_df.rate.max()
+        self.min_rate = min(train_df.rate)
+        self.max_rate = train_df.rate.max()
 
         # Refine User Info
         self.users = train_df.user.unique()
@@ -64,79 +64,31 @@ class BatchIterator:
     """
 
     def __init__(self, x, y, batch_size, device):
-        self.device =device
+        
+        # Data Shuffle & Slicing
+        indices = torch.randperm(x.size(0))
+        x = torch.index_select(x, dim=0, index=indices)
+        y = torch.index_select(y, dim=0, index=indices)
+        
+        self.x = x.split(batch_size, dim=0)
+        self.y = y.split(batch_size, dim=0)
+        self.device = device
         self.batch_size = batch_size
-        self.iteration = x.shape[0] // batch_size
-        self.x, self.y = x, y
+        self.iteration = len(self.x)
         self.cur = 0
-        # TODO: 기존 방식으로 체인지하기 (제너레이팅 X)
+
     def __iter__(self):
         return self
 
     def __next__(self):
         return self.next()
 
-    def get_batch(self, data):
-        """현재 Batch만 Device로 올림"""
-        return data[
-            (self.cur - 1) * self.batch_size:
-            self.cur * self.batch_size
-        ].to(self.device)
-
     def next(self):
         if self.cur >= self.iteration:
             raise StopIteration()
         self.cur += 1
-        # 배치 데이터 슬라이싱 및 셔플
-        x, y = self.get_batch(self.x), self.get_batch(self.y)
-        indices = torch.randperm(x.size(0), device=x.device)
-        x = torch.index_select(x, dim=0, index=indices)
-        y = torch.index_select(y, dim=0, index=indices)
-        return x, y
+        return (
+            self.x[self.cur - 1].to(self.device), 
+            self.y[self.cur - 1].to(self.device)
+        )
 
-"""
-def _train(self, x, y, config):
-        '''
-        한 에포크당 학습 과정
-        '''
-
-        # 학습 모드 On
-        # 이걸 해야 학습이 모델에 반영됨
-        self.model.train()
-
-        # 학습 데이터 셔플
-        indices = torch.randperm(x.size(0), device=x.device)
-        x = torch.index_select(x, dim=0, index=indices)
-        y = torch.index_select(y, dim=0, index=indices)
-
-        # 배치 사이즈에 맞춰서 자르기
-        x = x.split(config.batch_size, dim=0)
-        y = y.split(config.batch_size, dim=0)
-
-        total_loss = 0
-
-        for i, (x_i, y_i) in enumerate(zip(x, y)):
-            pred_y_i = self.model(x_i)
-            # squeeze : (N, 1) -> (N,)로 변환
-            # print("-----")
-            # print(pred_y_i.size())
-            # print(y_i.squeeze().size())
-            # print("-----")
-            loss = self.crit(pred_y_i, y_i.squeeze())
-
-            # 그래디언트 초기화 및 역전파 진행
-            self.optim.zero_grad()
-            loss.backward()
-            self.optim.step()
-
-            if config.verbose >= 2:
-                print("Train Iteration(%d/%d): loss=%.4e" % (
-                    i + 1,
-                    len(x),
-                    float(loss)
-                ))
-            # 효율적인 메모리 연산을 위해 float로 캐스팅
-            total_loss += float(loss)
-
-        return total_loss / len(x)
-"""

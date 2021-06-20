@@ -8,11 +8,13 @@ Original Code: https://github.com/hexiangnan/neural_collaborative_filtering
 """
 
 import argparse
-import pprint
+from pprint import pprint
 import torch
 from torch import optim
 import torch.nn as nn
-from data_loader import KMRDDataLoader, BatchIterator
+from model import NeuralMatrixFactorization
+from data_loader import KMRDDataLoader
+from trainer import Trainer
 
 KMRD_SMALL_DATA_PATH = "../data/kmrd/kmr_dataset/datafile/kmrd-small/rates.csv"
 
@@ -29,7 +31,13 @@ def define_argparser():
     p.add_argument(
         '--data_path',
         default=KMRD_SMALL_DATA_PATH,
-        help='Model file name to save. Additional information would be annotated to the file name.'
+        help='Dataset Path, Default=%(default)s'
+    )
+    p.add_argument(
+        '--hidden_size',
+        type=int,
+        default=200,
+        help='Embedding Latent Vector Size. Default=%(default)s'
     )
     p.add_argument(
         '--batch_size',
@@ -60,25 +68,33 @@ def define_argparser():
 
 
 def main(config):
-    def print_config(config):
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(vars(config))
-    print_config(config)
+    print("# Config")
+    pprint(vars(config))
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     data_loader = KMRDDataLoader(config.data_path)
 
-    batch_iter = BatchIterator(
-        data_loader.train_x,
-        data_loader.train_y,
-        config.batch_size, device)
+    print("Train:", data_loader.train_x.shape[0])
+    print("Valid:", data_loader.valid_x.shape[0])
 
-    for x, y in batch_iter:
-        print(x)
-        print(x.size())
-        print(y)
-        print(y.size())
-        break
+    model = NeuralMatrixFactorization(
+        data_loader.num_users,
+        data_loader.num_items,
+        config.hidden_size
+    ).to(device)
+    optimizer = optim.Adam(model.parameters())
+    crit = nn.MSELoss().to(device)
+
+    trainer = Trainer(model, optimizer, crit, device)
+    trainer.train(data_loader, config)
+
+    torch.save(
+        {
+            'model': trainer.model.state_dict(),
+            'config':config
+        },
+        config.model_fn
+    )
 
 
 if __name__ == '__main__':
