@@ -3,7 +3,8 @@
 Paper: https://arxiv.org/pdf/1708.05031.pdf
 Original Code: https://github.com/hexiangnan/neural_collaborative_filtering
 
-논문은 0과 1로 user-item interaction으로 matrix을 나타내고 학습했으나, 본 코드에서는 rating을 직접 예측함.
+논문은 0과 1로 user-item interaction으로 matrix을 나타내고 학습했으나,
+본 코드에서는 rating을 직접 예측함.
 """
 
 import argparse
@@ -11,6 +12,9 @@ import pprint
 import torch
 from torch import optim
 import torch.nn as nn
+from data_loader import KMRDDataLoader, BatchIterator
+
+KMRD_SMALL_DATA_PATH = "../data/kmrd/kmr_dataset/datafile/kmrd-small/rates.csv"
 
 
 def define_argparser():
@@ -23,10 +27,9 @@ def define_argparser():
         help='Model file name to save. Additional information would be annotated to the file name.'
     )
     p.add_argument(
-        '--gpu_id',
-        type=int,
-        default=0,
-        help='GPU ID to train. Currently, GPU parallel is not supported. -1 for CPU. Default=%(default)s'
+        '--data_path',
+        default=KMRD_SMALL_DATA_PATH,
+        help='Model file name to save. Additional information would be annotated to the file name.'
     )
     p.add_argument(
         '--batch_size',
@@ -52,16 +55,30 @@ def define_argparser():
         default=.2,
         help='Dropout rate. Default=%(default)s'
     )
-    p.add_argument(
-        '--iteration_per_update',
-        type=int,
-        default=32,
-        help='Number of feed-forward iterations for one parameter update. Default=%(default)s'
-    )
+    config = p.parse_args()
+    return config
 
 
 def main(config):
-    pass
+    def print_config(config):
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(vars(config))
+    print_config(config)
+
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    data_loader = KMRDDataLoader(config.data_path)
+
+    batch_iter = BatchIterator(
+        data_loader.train_x,
+        data_loader.train_y,
+        config.batch_size, device)
+
+    for x, y in batch_iter:
+        print(x)
+        print(x.size())
+        print(y)
+        print(y.size())
+        break
 
 
 if __name__ == '__main__':
