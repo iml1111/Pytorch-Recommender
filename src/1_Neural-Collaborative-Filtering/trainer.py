@@ -34,7 +34,7 @@ class Trainer:
         )
         progress = trange(
             batches.iteration, 
-            desc="train-loss:nan | param:nan | g_param:nan",
+            desc="train:nan | p:nan | g:nan",
             leave=False
         )
         for _ in progress:
@@ -54,7 +54,7 @@ class Trainer:
             # 현재 loss, 현재 이터레이션, 각종 norm 보고
 
             progress.set_description(
-                "train-loss:%.4e | param:%.4e | g_param:%.4e" % (
+                "train:%.4e | p:%.4e | g:%.4e" % (
                     float(loss),
                     float(self.get_parameter_norm(self.model.parameters())),
                     float(self.get_grad_norm(self.model.parameters())),

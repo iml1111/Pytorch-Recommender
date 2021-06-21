@@ -9,27 +9,20 @@ class NeuralMatrixFactorization(nn.Module):
 		self.user_emb = nn.Embedding(n_users, hidden_size)
 		self.item_emb = nn.Embedding(n_items, hidden_size)
 		self.layers = nn.Sequential(
-			nn.Linear(hidden_size * 2, 128),
-			nn.LeakyReLU(),
-            nn.BatchNorm1d(128),
-
-            nn.Linear(128, 64),
-			nn.LeakyReLU(),
-            nn.BatchNorm1d(64),
+			nn.Linear(hidden_size * 2, 64),
+			nn.ReLU(),
+            nn.Dropout(.3),
 
             nn.Linear(64, 32),
-			nn.LeakyReLU(),
-            nn.BatchNorm1d(32),
+			nn.ReLU(),
+             nn.Dropout(.3),
 
             nn.Linear(32, 16),
-			nn.LeakyReLU(),
-            nn.BatchNorm1d(16),
-
-            nn.Linear(16, 8),
-			nn.LeakyReLU(),
-            nn.BatchNorm1d(8),
-
-            nn.Linear(8, 1),
+			nn.ReLU(),
+            nn.Dropout(.3),
+            
+            nn.ReLU(),
+            nn.Linear(16, 1),
 			nn.Sigmoid()
 		)
 

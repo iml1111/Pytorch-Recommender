@@ -37,7 +37,7 @@ def define_argparser():
     p.add_argument(
         '--hidden_size',
         type=int,
-        default=300,
+        default=16,
         help='Embedding Latent Vector Size. Default=%(default)s'
     )
     p.add_argument(
