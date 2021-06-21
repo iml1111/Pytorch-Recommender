@@ -17,6 +17,7 @@ from data_loader import KMRDDataLoader
 from trainer import Trainer
 
 KMRD_SMALL_DATA_PATH = "../data/kmrd/kmr_dataset/datafile/kmrd-small/rates.csv"
+KMRD_2M_DATA_PATH = "../data/kmrd/kmr_dataset/datafile/kmrd/rates-2m.csv"
 
 
 def define_argparser():
@@ -42,7 +43,7 @@ def define_argparser():
     p.add_argument(
         '--batch_size',
         type=int,
-        default=128,
+        default=256,
         help='Mini batch size for gradient descent. Default=%(default)s'
     )
     p.add_argument(
@@ -50,18 +51,6 @@ def define_argparser():
         type=int,
         default=30,
         help='Number of epochs to train. Default=%(default)s'
-    )
-    p.add_argument(
-        '--verbose',
-        type=int,
-        default=2,
-        help='VERBOSE_SILENT, VERBOSE_EPOCH_WISE, VERBOSE_BATCH_WISE = 0, 1, 2. Default=%(default)s'
-    )
-    p.add_argument(
-        '--dropout',
-        type=float,
-        default=.2,
-        help='Dropout rate. Default=%(default)s'
     )
     config = p.parse_args()
     return config

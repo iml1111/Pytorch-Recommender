@@ -32,7 +32,11 @@ class Trainer:
             config.batch_size,
             self.device
         )
-        progress = trange(batches.iteration, desc="train-loss:nan | param:nan | g_param:nan")
+        progress = trange(
+            batches.iteration, 
+            desc="train-loss:nan | param:nan | g_param:nan",
+            leave=False
+        )
         for _ in progress:
             x, y = next(batches)
             y_hat = self.model(
@@ -75,7 +79,11 @@ class Trainer:
                 config.batch_size,
                 self.device
             )
-            progress = trange(batches.iteration, desc="valid-loss: nan")
+            progress = trange(
+                batches.iteration, 
+                desc="valid-loss: nan",
+                leave=False
+            )
             for _ in progress:
                 x, y = next(batches)
                 y_hat = self.model(
