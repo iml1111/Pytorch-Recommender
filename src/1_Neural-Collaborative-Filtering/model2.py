@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-# https://wikidocs.net/61374
+
 class NeuralMatrixFactorization(nn.Module):
 
 	def __init__(self, n_users, n_items, hidden_size):
@@ -10,24 +10,24 @@ class NeuralMatrixFactorization(nn.Module):
 		self.item_emb = nn.Embedding(n_items, hidden_size)
 		self.layers = nn.Sequential(
 			nn.Linear(hidden_size * 2, 128),
-			nn.LeakyReLU(),
-            nn.BatchNorm1d(128),
+			nn.ReLU(),
+            nn.Dropout(.2),
 
             nn.Linear(128, 64),
-			nn.LeakyReLU(),
-            nn.BatchNorm1d(64),
+			nn.ReLU(),
+            nn.Dropout(.2),
 
             nn.Linear(64, 32),
-			nn.LeakyReLU(),
-            nn.BatchNorm1d(32),
+			nn.ReLU(),
+            nn.Dropout(.2),
 
             nn.Linear(32, 16),
-			nn.LeakyReLU(),
-            nn.BatchNorm1d(16),
+			nn.ReLU(),
+            nn.Dropout(.2),
 
             nn.Linear(16, 8),
-			nn.LeakyReLU(),
-            nn.BatchNorm1d(8),
+			nn.ReLU(),
+            nn.Dropout(.2),
 
             nn.Linear(8, 1),
 			nn.Sigmoid()
