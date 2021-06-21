@@ -26,7 +26,7 @@ def define_argparser():
 
     p.add_argument(
         '--model_fn',
-        default='./models/model.pth',
+        default='./model.pth',
         help='Model file name to save. Additional information would be annotated to the file name.'
     )
     p.add_argument(
@@ -37,7 +37,7 @@ def define_argparser():
     p.add_argument(
         '--hidden_size',
         type=int,
-        default=200,
+        default=300,
         help='Embedding Latent Vector Size. Default=%(default)s'
     )
     p.add_argument(
