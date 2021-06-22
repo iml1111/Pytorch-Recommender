@@ -5,6 +5,7 @@ Original Code: https://github.com/hexiangnan/neural_collaborative_filtering
 
 논문은 0과 1로 user-item interaction으로 matrix을 나타내고 학습했으나,
 본 코드에서는 rating을 직접 예측함.
+Epoch(30/30): train_loss=2.0318e+00 valid_loss=3.9145e+00 lowest_loss=3.6864e+00
 """
 
 import argparse
