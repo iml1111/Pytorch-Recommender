@@ -15,7 +15,7 @@ class NeuralMatrixFactorization(nn.Module):
 
             nn.Linear(64, 32),
 			nn.ReLU(),
-             nn.Dropout(.3),
+            nn.Dropout(.3),
 
             nn.Linear(32, 16),
 			nn.ReLU(),
