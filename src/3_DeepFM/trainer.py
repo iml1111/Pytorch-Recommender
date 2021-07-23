@@ -1,6 +1,6 @@
 from copy import deepcopy
 import torch
-from tqdm import trange, tqdm
+from tqdm import tqdm
 import numpy as np
 
 class Trainer:
@@ -9,7 +9,7 @@ class Trainer:
         self.model = model
         self.optim = optim
         self.crit = crit
-        self.device
+        self.device = device
 
     def _train(self, data_loader, config):
         """1 Epoch Train"""
@@ -57,7 +57,7 @@ class Trainer:
         with torch.no_grad():
             batches = tqdm(
                 data_loader,
-                desc="train:nan | p:nan | g:nan",
+                desc="valid:nan | p:nan | g:nan",
                 leave=False
             )
             for x, y in batches:
@@ -66,7 +66,7 @@ class Trainer:
                 loss = self.crit(y_hat, y)
 
                 batches.set_description(
-                    "train:%.4e | p:%.4e | g:%.4e" % (
+                    "valid:%.4e | p:%.4e | g:%.4e" % (
                         float(loss),
                         float(
                             self.get_parameter_norm(
@@ -100,15 +100,15 @@ class Trainer:
 
             if valid_loss <= lowest_loss:
                 lowest_loss = valid_loss
-                best_model = deepcopy(self.modle.state_dict())
+                best_model = deepcopy(self.model.state_dict())
 
-        print("Epoch(%d/%d): train_loss=%.4e valid_loss=%.4e lowest_loss=%.4e" % (
-                epoch + 1,
-                config.n_epochs,
-                train_loss,
-                valid_loss,
-                lowest_loss,
-            ))
+            print("Epoch(%d/%d): train_loss=%.4e valid_loss=%.4e lowest_loss=%.4e" % (
+                    epoch + 1,
+                    config.n_epochs,
+                    train_loss,
+                    valid_loss,
+                    lowest_loss,
+                ))
 
         self.model.load_state_dict(best_model)
 
