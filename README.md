@@ -56,11 +56,9 @@ optional arguments:
 ```shell
 $ mkdir src/data && cd data/
 $ git clone https://github.com/lovit/kmrd && cd kmrd/
-$ python setup install
+$ python setup.py install
 # ~\Pytorch-Recommender\src\data\kmrd\kmr_dataset\datafile\kmrd-small
 ```
-
-
 
 ## References
 
